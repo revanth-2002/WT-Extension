@@ -24,30 +24,6 @@ function waitForElement(selector, timeout = 10000) {
     });
 }
 
-async function expandDetails() {
-    console.log("Expanding 'Show more' buttons...");
-    const buttons = Array.from(document.querySelectorAll('button'));
-
-    const showMoreButtons = buttons.filter(b => {
-        const text = b.innerText.toLowerCase();
-        return text.includes('more') || text.includes('see more');
-    });
-
-    showMoreButtons.forEach(button => {
-        try {
-            button.click();
-        } catch (e) {
-            // Ignore click errors
-        }
-    });
-
-    // Wait a bit for DOM updates after clicks
-    if (showMoreButtons.length > 0) {
-        await new Promise(resolve => setTimeout(resolve, 500));
-    }
-    console.log("Finished expanding.");
-}
-
 function getSectionContent(anchorId) {
     const anchor = document.getElementById(anchorId);
     if (!anchor) return null;

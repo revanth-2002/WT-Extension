@@ -1,4 +1,4 @@
-function scrapeBasicInfo() {
+async function scrapeBasicInfo() {
     const data = {};
 
     // --- Basic Info ---
@@ -6,17 +6,17 @@ function scrapeBasicInfo() {
     if (nameElem) data.name = cleanText(nameElem.innerText);
 
     // Headline is usually in a div near the h1
-    const h1Parent = nameElem ? nameElem.closest('div').parentElement : null;
-    if (h1Parent) {
-        const divs = h1Parent.querySelectorAll('div');
-        for (let div of divs) {
-            const text = cleanText(div.innerText);
-            if (text && text !== data.name && text.length > 10 && text.length < 200) {
-                data.headline = text;
-                break;
-            }
-        }
-    }
+    const divs = document.querySelector('section.artdeco-card > div.ph5 > div.mt2 > div > div.text-body-medium');
+    //console.log(divs);
+    const text = cleanText(divs?.innerText);
+    data.headline = text;
+    // for (let div of divs) {
+    //     const text = cleanText(div.textContent);
+    //     if (text && text !== data.name && text.length > 10 && text.length < 200) {
+    //         data.headline = text;
+    //         break;
+    //     }
+    // }
 
     // Location - look for text that looks like a location
     const allSpans = document.querySelectorAll('span');
@@ -29,19 +29,22 @@ function scrapeBasicInfo() {
     }
 
     // --- About Section ---
-    const aboutElem = document.querySelector('#about');
-    if (aboutElem) {
-        const aboutContainer = aboutElem.closest('section');
-        if (aboutContainer) {
-            const spans = aboutContainer.querySelectorAll('span[aria-hidden="true"]');
-            for (let span of spans) {
-                const text = cleanText(span.innerText);
-                if (text.length > 50) {
-                    data.about = text;
-                    break;
-                }
-            }
-        }
+    const aboutelem = document.querySelector('#about');
+    if (aboutelem) {
+        const aboutElem = aboutelem?.parentElement.querySelector(
+        'section.artdeco-card > div.display-flex > div > div > div > span.visually-hidden'
+        );
+
+        const About = aboutElem?.textContent || "";
+
+        const cleanAbout = About
+        ?.replace(/[\n\r\t]+/g, '\n')
+        .replace(/[ ]{2,}/g, ' ')
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n');
+         data.about=cleanAbout;
     }
 
     return data;
