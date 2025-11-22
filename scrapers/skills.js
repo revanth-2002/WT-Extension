@@ -1,8 +1,8 @@
-function scrapeSkills() {
+ function scrapeSkills() {
     const skillsList = getSectionContent('skills');
     const skills = [];
     if (skillsList) {
-        const items = skillsList.querySelectorAll(':scope > li');
+        const items = skillsList.querySelectorAll(':scope >li');
         items.forEach(item => {
             const spans = item.querySelectorAll('span[aria-hidden="true"]');
             for (let span of spans) {

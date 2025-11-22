@@ -1,4 +1,4 @@
-function scrapeEducation() {
+async function scrapeEducation() {
     const educationList = getSectionContent('education');
     const edus = [];
     if (educationList) {
