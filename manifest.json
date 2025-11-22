@@ -12,7 +12,8 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://www.linkedin.com/*"
+    "https://www.linkedin.com/*",
+    "https://wts.iie.network/*"
   ],
   "content_scripts": [
     {
@@ -20,6 +21,7 @@
         "https://www.linkedin.com/in/*"
       ],
       "js": [
+        "ui.js",
         "utils.js",
         "scrapers/basicInfo.js",
         "scrapers/experience.js",

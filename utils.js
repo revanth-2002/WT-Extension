@@ -65,14 +65,44 @@ function cleanText(text) {
         .trim();
 }
 
-function downloadData(data) {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${data.name || 'linkedin_profile'} LinkedIn Profile.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+async function sendProfileData(data) {
+    const payload = {
+        name: data.name,
+        url: data.profileUrl,
+        scrapetime: data.scrapedAt,
+        edu: data.education,
+        exp: data.experience,
+        about: data.about,
+        location: data.location
+    };
+
+    // Validation - Only check name and url
+    const requiredFields = ['name', 'url'];
+    const missingFields = requiredFields.filter(field => !payload[field]);
+
+    if (missingFields.length > 0) {
+        console.error("Missing required fields:", missingFields);
+        return;
+    }
+
+    try {
+        const response = await fetch('https://wts.iie.network/extension', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            console.log("Data sent successfully!");
+            if (typeof UI !== 'undefined') UI.setStatus('success');
+        } else {
+            console.error("Failed to send data:", response.statusText);
+            if (typeof UI !== 'undefined') UI.setStatus('error');
+        }
+    } catch (error) {
+        console.error("Error sending data:", error);
+        if (typeof UI !== 'undefined') UI.setStatus('error');
+    }
 }

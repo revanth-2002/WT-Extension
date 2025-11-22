@@ -33,6 +33,12 @@ async function initScraping() {
   }
   isScraping = true;
 
+  // Initialize UI
+  if (typeof UI !== 'undefined') {
+    UI.init();
+    UI.setStatus('loading');
+  }
+
   console.log("Initializing scraping...");
 
   try {
@@ -41,24 +47,34 @@ async function initScraping() {
 
     if (!nameElement) {
       console.log("Profile name not found after waiting. Aborting.");
+      if (typeof UI !== 'undefined') UI.setStatus('error');
       return;
     }
 
     // Wait a bit more for other sections to settle
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    
+
 
     console.log("Attempting to scrape...");
-    const data =await scrapeProfile();
+    const data = await scrapeProfile();
     console.log("Scraped Data:", data);
 
+    // Update UI with data for preview
+    if (typeof UI !== 'undefined') {
+      UI.setData(data);
+    }
+
     if (data.name) {
-      downloadData(data);
+      await sendProfileData(data);
     } else {
       console.log(
         "Could not find profile name. Please ensure you are on a profile page."
       );
+      if (typeof UI !== 'undefined') UI.setStatus('error');
     }
+  } catch (e) {
+    console.error("Scraping error:", e);
+    if (typeof UI !== 'undefined') UI.setStatus('error');
   } finally {
     // Reset flag after a cooldown
     setTimeout(() => {
